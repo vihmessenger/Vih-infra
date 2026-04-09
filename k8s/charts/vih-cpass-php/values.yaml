@@ -1,0 +1,14 @@
+# Override via helm --set or values per environment
+image:
+  repository: ""
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  port: 80
+
+ingress:
+  enabled: false
+  host: ""

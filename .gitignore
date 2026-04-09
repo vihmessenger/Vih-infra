@@ -1,0 +1,12 @@
+.DS_Store
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+.terragrunt-cache/
+crash.log
+override.tf
+*.pem
+.env
+*.auto.tfvars
+!terraform.tfvars.example

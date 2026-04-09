@@ -1,0 +1,19 @@
+# Build and push vih-nlp Docker image (Django). Adjust Dockerfile path if your repo layout differs.
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+      - export IMAGE_URI="${ECR_REPOSITORY}:$IMAGE_TAG"
+  build:
+    commands:
+      - docker build -t $IMAGE_URI .
+  post_build:
+    commands:
+      - docker push $IMAGE_URI
+      - printf '{"ImageUri":"%s"}' "$IMAGE_URI" > imageDetail.json
+
+artifacts:
+  files:
+    - imageDetail.json

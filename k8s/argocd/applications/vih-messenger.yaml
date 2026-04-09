@@ -1,0 +1,28 @@
+# Argo CD Application — ViH Messenger web frontend.
+# Docker/CI source: https://github.com/vihmessenger/vih-messenger (CodePipeline default branch: main)
+# Helm chart: set repoURL to the Git repo that contains k8s/charts/vih-messenger.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vih-messenger
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/vihmessenger/Vih-infra.git
+    targetRevision: main
+    path: k8s/charts/vih-messenger
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vih-messenger
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

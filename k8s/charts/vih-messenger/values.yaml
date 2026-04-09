@@ -1,0 +1,15 @@
+# Set repository to your ECR URL after first CI push, e.g.
+# 123456789012.dkr.ecr.ap-south-1.amazonaws.com/vih-messenger
+image:
+  repository: ""
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  port: 80
+
+ingress:
+  enabled: false
+  host: ""
