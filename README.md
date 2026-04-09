@@ -4,6 +4,9 @@ AWS IaC monorepo: **S3 + KMS** remote state (**S3 native locking** via `use_lock
 
 **Infra repo (GitOps / Helm):** [github.com/vihmessenger/Vih-infra](https://github.com/vihmessenger/Vih-infra) — **`k8s/charts/*`** aur Argo manifests yahi par. **Org:** [vihmessenger](https://github.com/vihmessenger).
 
+**SSH clone** (uses `github-vihmessenger` host from `~/.ssh/config` + **Deba-VIH-MESSENGER** key):  
+`git clone git@github-vihmessenger:vihmessenger/Vih-infra.git`
+
 **GitOps:** **Argo CD** deploys workloads from Git (`k8s/charts/*`, `k8s/argocd/applications/*`). **CodePipeline** only **builds Docker images and pushes to ECR** (no Helm deploy in CI).
 
 ## Architecture alignment
