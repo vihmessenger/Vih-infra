@@ -1,17 +1,18 @@
 # Build Docker image for vih-cpass-php and push to ECR.
-# Expects a Dockerfile at the repository root (adjust paths to match your app repo layout).
+# DOCKERFILE_PATH / DOCKER_CONTEXT from Terragrunt (defaults Dockerfile / .).
 version: 0.2
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+      - export ECR_REGISTRY="${ECR_REGISTRY:-$(echo "$ECR_REPOSITORY" | cut -d'/' -f1)}"
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
       - export IMAGE_URI="${ECR_REPOSITORY}:$IMAGE_TAG"
       - echo "IMAGE_URI=$IMAGE_URI"
   build:
     commands:
-      - docker build -t $IMAGE_URI .
+      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_CONTEXT"
   post_build:
     commands:
       - docker push $IMAGE_URI

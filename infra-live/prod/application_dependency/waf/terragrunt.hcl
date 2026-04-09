@@ -7,6 +7,6 @@ terraform {
 }
 
 inputs = {
-  name_prefix = "vih-prod"
+  name_prefix = "vih-messenger-prod"
   tags        = {}
 }

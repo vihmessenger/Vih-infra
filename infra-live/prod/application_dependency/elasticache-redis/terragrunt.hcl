@@ -19,7 +19,7 @@ terraform {
 }
 
 inputs = {
-  replication_group_id = "vih-prod-redis"
+  replication_group_id = "vih-messenger-prod-redis"
 
   vpc_id             = dependency.vpc.outputs.vpc_id
   private_subnet_ids = dependency.vpc.outputs.private_subnet_ids

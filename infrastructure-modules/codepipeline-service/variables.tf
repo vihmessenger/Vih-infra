@@ -30,6 +30,18 @@ variable "image_tag" {
   default = "latest"
 }
 
+variable "dockerfile_path" {
+  type        = string
+  description = "Path to Dockerfile relative to repository root (CodePipeline source checkout)."
+  default     = "Dockerfile"
+}
+
+variable "docker_context" {
+  type        = string
+  description = "Docker build context directory relative to repository root."
+  default     = "."
+}
+
 variable "aws_region" {
   type = string
 }

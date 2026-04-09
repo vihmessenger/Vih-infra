@@ -6,7 +6,7 @@ dependency "codestar" {
   config_path = "../../pre/codestar-connection"
 
   mock_outputs = {
-    connection_arn = "arn:aws:codestar-connections:ap-south-1:000000000000:connection/mock"
+    connection_arn = "arn:aws:codestar-connections:us-east-1:000000000000:connection/mock"
   }
   mock_outputs_allowed_terraform_commands = ["validate", "plan", "show", "destroy", "state", "output"]
 }
@@ -15,11 +15,11 @@ dependency "ecr" {
   config_path = "../../application_dependency/ecr"
 
   mock_outputs = {
-    registry_host = "000000000000.dkr.ecr.ap-south-1.amazonaws.com"
+    registry_host = "000000000000.dkr.ecr.us-east-1.amazonaws.com"
     repository_urls = {
-      "vih-cpass-php"  = "000000000000.dkr.ecr.ap-south-1.amazonaws.com/vih-cpass-php"
-      "vih-nlp"        = "000000000000.dkr.ecr.ap-south-1.amazonaws.com/vih-nlp"
-      "vih-messenger"  = "000000000000.dkr.ecr.ap-south-1.amazonaws.com/vih-messenger"
+      "vih-cpass-php"  = "000000000000.dkr.ecr.us-east-1.amazonaws.com/vih-cpass-php"
+      "vih-nlp"        = "000000000000.dkr.ecr.us-east-1.amazonaws.com/vih-nlp"
+      "vih-messenger"  = "000000000000.dkr.ecr.us-east-1.amazonaws.com/vih-messenger"
     }
   }
   mock_outputs_allowed_terraform_commands = ["validate", "plan", "show", "destroy", "state", "output"]
@@ -41,7 +41,7 @@ inputs = {
   ecr_repository_name = "vih-cpass-php"
   image_tag             = "latest"
 
-  aws_region = get_env("TG_AWS_REGION", "ap-south-1")
+  aws_region = get_env("TG_AWS_REGION", "us-east-1")
 
   # GitOps: build + push ECR only; Argo CD deploys from Git (see k8s/argocd/).
   enable_helm_deploy_stage = false

@@ -7,6 +7,6 @@ terraform {
 }
 
 inputs = {
-  connection_name = "vih-prod-github"
+  connection_name = "vih-messenger-prod-github"
   tags            = {}
 }

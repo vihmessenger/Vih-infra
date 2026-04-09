@@ -1,14 +1,18 @@
-# Build and push vih-nlp Docker image (Django). Adjust Dockerfile path if your repo layout differs.
+# Build and push vih-nlp Docker image (Django).
+# DOCKERFILE_PATH / DOCKER_CONTEXT come from Terragrunt (default Dockerfile / .).
+# If build fails with "no such file Dockerfile", add a Dockerfile at repo root or set paths in vih-nlp/terragrunt.hcl.
 version: 0.2
 
 phases:
   pre_build:
     commands:
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+      - export ECR_REGISTRY="${ECR_REGISTRY:-$(echo "$ECR_REPOSITORY" | cut -d'/' -f1)}"
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
       - export IMAGE_URI="${ECR_REPOSITORY}:$IMAGE_TAG"
+      - echo "docker build -f $DOCKERFILE_PATH -t $IMAGE_URI $DOCKER_CONTEXT"
   build:
     commands:
-      - docker build -t $IMAGE_URI .
+      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_CONTEXT"
   post_build:
     commands:
       - docker push $IMAGE_URI

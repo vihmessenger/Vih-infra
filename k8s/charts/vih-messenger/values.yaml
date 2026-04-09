@@ -1,5 +1,5 @@
 # Set repository to your ECR URL after first CI push, e.g.
-# 123456789012.dkr.ecr.ap-south-1.amazonaws.com/vih-messenger
+# 123456789012.dkr.ecr.us-east-1.amazonaws.com/vih-messenger
 image:
   repository: ""
   tag: latest

@@ -19,8 +19,10 @@ terraform {
 }
 
 inputs = {
-  cluster_name    = "vih-prod-eks"
-  cluster_version = "1.29"
+  cluster_name = "vih-messenger-prod-eks"
+  # AWS EKS allows only one Kubernetes minor version upgrade per operation.
+  # From 1.29: apply 1.30 → then 1.31 → … → target (e.g. 1.35), one bump per apply.
+  cluster_version = "1.30"
 
   vpc_id             = dependency.vpc.outputs.vpc_id
   private_subnet_ids = dependency.vpc.outputs.private_subnet_ids

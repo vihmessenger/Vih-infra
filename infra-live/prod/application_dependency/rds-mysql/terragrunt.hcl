@@ -19,7 +19,7 @@ terraform {
 }
 
 inputs = {
-  identifier = "vih-prod-mysql"
+  identifier = "vih-messenger-prod-mysql"
 
   vpc_id             = dependency.vpc.outputs.vpc_id
   private_subnet_ids = dependency.vpc.outputs.private_subnet_ids

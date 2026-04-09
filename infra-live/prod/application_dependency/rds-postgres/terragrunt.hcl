@@ -19,7 +19,7 @@ terraform {
 }
 
 inputs = {
-  identifier = "vih-prod-pg"
+  identifier = "vih-messenger-prod-pg"
 
   vpc_id             = dependency.vpc.outputs.vpc_id
   private_subnet_ids = dependency.vpc.outputs.private_subnet_ids

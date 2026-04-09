@@ -1,21 +1,21 @@
 # Build Docker image for vih-messenger (web frontend) and push to ECR.
 # Repo: https://github.com/vihmessenger/vih-messenger — default branch: main (override via terragrunt env)
 #
-# Expects a Dockerfile at the repository root. If your Dockerfile is elsewhere, change the
-# docker build line, e.g.:
-#   docker build -f frontend/Dockerfile -t $IMAGE_URI frontend
+# DOCKERFILE_PATH / DOCKER_CONTEXT are set on the CodeBuild project (Terragrunt inputs).
 version: 0.2
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+      # `docker login` server must be registry host only (set by Terraform as ECR_REGISTRY).
+      - export ECR_REGISTRY="${ECR_REGISTRY:-$(echo "$ECR_REPOSITORY" | cut -d'/' -f1)}"
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
       - export IMAGE_URI="${ECR_REPOSITORY}:$IMAGE_TAG"
       - echo "IMAGE_URI=$IMAGE_URI"
   build:
     commands:
-      - docker build -t $IMAGE_URI .
+      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_CONTEXT"
   post_build:
     commands:
       - docker push $IMAGE_URI

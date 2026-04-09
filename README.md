@@ -56,7 +56,10 @@ Vih-infra/
 │       │   └── waf/terragrunt.hcl
 │       ├── application/
 │       │   ├── eks/terragrunt.hcl
+│       │   ├── eks-lbc/terragrunt.hcl          # AWS Load Balancer Controller (Helm)
 │       │   └── argocd/terragrunt.hcl
+│       ├── post/
+│       │   └── route53-argocd/terragrunt.hcl   # optional: public DNS → Argo ALB
 │       └── codepipeline/
 │           ├── vih-cpass-php/
 │           │   ├── terragrunt.hcl
@@ -80,7 +83,9 @@ Vih-infra/
 │   ├── s3-bucket/
 │   ├── waf-alb/
 │   ├── eks/
-│   └── argocd-bootstrap/
+│   ├── argocd-bootstrap/
+│   ├── eks-aws-lbc-helm/              # Helm: AWS Load Balancer Controller
+│   └── route53-alb-alias/
 └── k8s/
     ├── argocd/
     │   ├── README.md
@@ -102,7 +107,7 @@ Each `infrastructure-modules/<name>/` has Terraform `*.tf`. Not committed: `.ter
 
 Terraform **≥ 1.10** · Terragrunt **≥ 0.50** · AWS CLI · `kubectl` (after EKS)
 
-For Argo on **ALB**: install [AWS Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html) before relying on Ingress (`k8s/argocd/README.md`).
+For Argo on **ALB**: apply **`application/eks-lbc`** (Helm) after **`application/eks`**, or install [AWS Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html) manually — before Argo **Ingress** can provision an ALB (`k8s/argocd/README.md`, `application/eks-lbc/README.md`).
 
 ---
 
@@ -114,9 +119,12 @@ Set before `terragrunt` under `infra-live/prod/`:
 |----------|--------|
 | `VIH_TF_STATE_BUCKET` | **Required** — from bootstrap |
 | `VIH_TF_STATE_KMS_KEY_ARN` | Optional; recommended |
-| `VIH_ROUTE53_ZONE_VIHRESEARCHLABS` | Hosted zone ID for ACM DNS validation |
+| `VIH_ROUTE53_ZONE_VIHRESEARCHLABS` | Hosted zone ID for ACM DNS validation and `post/route53-argocd` |
+| `VIH_ARGOCD_ALB_ARN` | (optional) Argo Ingress ALB ARN for `post/route53-argocd` — preferred |
+| `VIH_ARGOCD_ALB_DNS` | (optional) ALB DNS name if not using ARN |
+| `VIH_ARGOCD_ALB_ZONE_ID` | (optional) ALB canonical zone ID; default is us-east-1 when using DNS only |
 | `VIH_AWS_ACCOUNT_ID` | S3 app bucket suffix (default in `s3-app` terragrunt) |
-| `TG_AWS_REGION` | Default `ap-south-1` |
+| `TG_AWS_REGION` | Default `us-east-1` |
 
 ---
 
@@ -125,7 +133,7 @@ Set before `terragrunt` under `infra-live/prod/`:
 ```bash
 cd infra-bootstrap
 export VIH_TF_STATE_BUCKET="your-unique-bucket-name"
-export TG_AWS_REGION="${TG_AWS_REGION:-ap-south-1}"
+export TG_AWS_REGION="${TG_AWS_REGION:-us-east-1}"
 terragrunt init && terragrunt apply && terragrunt output
 ```
 
@@ -141,9 +149,10 @@ Paths are relative to `infra-live/prod/`. Details: **`infra-live/prod/README.md`
 2. `pre/acm` — `*.platform.vihresearchlabs.ai`  
 3. `application_dependency/ecr` → `rds-mysql` → `rds-postgres` → `elasticache-redis` → `s3-app` → `waf`  
 4. `application/eks`  
-5. Install **AWS LB Controller** if using Argo **Ingress**  
+5. `application/eks-lbc` — **AWS Load Balancer Controller** (Helm); IRSA can be created first (`eksctl` / docs). If LBC was installed manually, **`terragrunt import`** — see `application/eks-lbc/README.md`  
 6. `application/argocd`  
-7. `codepipeline/vih-cpass-php`, `vih-nlp`, `vih-messenger`
+7. **`post/route53-argocd`** (optional) — Route 53 **A alias** `argocd.platform…` → Argo ALB (`VIH_ARGOCD_ALB_ARN` or DNS + zone). If DNS was created manually, **`terragrunt import`** — see `post/route53-argocd/README.md`  
+8. `codepipeline/vih-cpass-php`, `vih-nlp`, `vih-messenger`
 
 ```bash
 cd infra-live/prod/pre/network
@@ -171,6 +180,8 @@ Argo UI (after DNS): `https://argocd.platform.vihresearchlabs.ai` · `kubectl ap
 | `ecr`, `eks`, `rds`, `elasticache`, `s3-bucket` | Registry, cluster, data |
 | `codestar-connection`, `codepipeline-service` | GitHub → build → ECR |
 | `argocd-bootstrap` | Argo CD Helm |
+| `route53-alb-alias` | Route 53 A record (alias) to an existing ALB |
+| `eks-aws-lbc-helm` | Helm release: AWS Load Balancer Controller |
 
 Optional: Helm deploy from pipeline via `enable_helm_deploy_stage` in `codepipeline-service` (default off).
 

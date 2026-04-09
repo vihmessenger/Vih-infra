@@ -1,6 +1,6 @@
 locals {
   environment = "prod"
-  aws_region  = get_env("TG_AWS_REGION", "ap-south-1")
+  aws_region  = get_env("TG_AWS_REGION", "us-east-1")
   project     = "vih-messenger"
 
   common_tags = {
@@ -11,6 +11,16 @@ locals {
 
   state_bucket      = get_env("VIH_TF_STATE_BUCKET", "REPLACE_STATE_BUCKET")
   state_kms_key_arn = get_env("VIH_TF_STATE_KMS_KEY_ARN", "")
+}
+
+generate "backend" {
+  path      = "backend.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<-EOF
+    terraform {
+      backend "s3" {}
+    }
+  EOF
 }
 
 remote_state {
@@ -31,16 +41,7 @@ generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<-EOF
-    terraform {
-      required_version = ">= 1.10.0"
-      required_providers {
-        aws = {
-          source  = "hashicorp/aws"
-          version = "~> 5.100"
-        }
-      }
-    }
-
+    # Provider only — each module supplies terraform/required_providers in versions.tf
     provider "aws" {
       region = "${local.aws_region}"
 

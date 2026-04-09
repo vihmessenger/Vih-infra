@@ -42,7 +42,9 @@ If the zone is in **another** AWS account, add ACM **validation CNAME** records 
 
 ## After certificate is Issued
 
-Point **`api.platform` / `ws.platform` / `app.platform` / `argocd.platform`** at the **new** cluster’s load balancers (see repo root **`README.md`**).
+Point **`api.platform` / `ws.platform` / `app.platform`** at the **new** cluster’s load balancers when those apps expose Ingress/ALBs.
+
+For **`argocd.platform.vihresearchlabs.ai`**, after the Argo Ingress has an ALB (requires **AWS Load Balancer Controller** on EKS), either create the Route 53 alias manually or apply Terraform stack **`infra-live/prod/post/route53-argocd`** (see repo root **`README.md`** and **`k8s/argocd/README.md`**).
 
 ---
 

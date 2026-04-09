@@ -44,6 +44,32 @@ resource "aws_iam_role_policy_attachment" "codebuild_logs" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
+# CodePipeline passes Source output via S3; CodeBuild must read/write that bucket (not only the pipeline role).
+data "aws_iam_policy_document" "codebuild_artifacts" {
+  statement {
+    sid = "PipelineArtifactsObjects"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:PutObject",
+    ]
+    resources = ["${aws_s3_bucket.pipeline_artifacts.arn}/*"]
+  }
+  statement {
+    sid = "PipelineArtifactsList"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = [aws_s3_bucket.pipeline_artifacts.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "codebuild_artifacts" {
+  name   = "${var.pipeline_name}-codebuild-artifacts"
+  role   = aws_iam_role.codebuild.id
+  policy = data.aws_iam_policy_document.codebuild_artifacts.json
+}
+
 data "aws_iam_policy_document" "codebuild_eks" {
   statement {
     sid = "EKS"
@@ -94,9 +120,22 @@ resource "aws_codebuild_project" "build" {
       name  = "ECR_REPOSITORY"
       value = "${var.ecr_repository_url}/${var.ecr_repository_name}"
     }
+    # docker login must use registry host only (account.dkr.ecr.region.amazonaws.com), not host/repo — see buildspec.
+    environment_variable {
+      name  = "ECR_REGISTRY"
+      value = var.ecr_repository_url
+    }
     environment_variable {
       name  = "IMAGE_TAG"
       value = var.image_tag
+    }
+    environment_variable {
+      name  = "DOCKERFILE_PATH"
+      value = var.dockerfile_path
+    }
+    environment_variable {
+      name  = "DOCKER_CONTEXT"
+      value = var.docker_context
     }
   }
 

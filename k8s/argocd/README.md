@@ -1,6 +1,7 @@
 # Argo CD — GitOps for ViH Messenger
 
 Infrastructure installs **Argo CD** on EKS via Terraform (`infrastructure-modules/argocd-bootstrap`).  
+**AWS Load Balancer Controller** is managed as **`infra-live/prod/application/eks-lbc`** (Helm); public DNS for the Argo UI is optional **`infra-live/prod/post/route53-argocd`** — see those folders’ `README.md` for imports if you installed LBC/DNS manually.  
 **Deployments** are driven by **Argo CD Applications** that watch the Git repo where **`k8s/charts/*`** lives.
 
 **GitHub organization:** [vihmessenger](https://github.com/vihmessenger) — saari related repos is org ke under.
@@ -65,10 +66,20 @@ Default hostname: **`argocd.platform.vihresearchlabs.ai`** (same ACM cert as `ap
 After the Ingress is ready, get the ALB hostname:
 
 ```bash
-kubectl -n argocd get ingress
+kubectl -n argocd get ingress argocd-server
 ```
 
-In **Route 53** (zone `vihresearchlabs.ai`), create an **A record (alias)** for **`argocd.platform.vihresearchlabs.ai`** → the **new** Argo ALB, or a **CNAME** to that ALB’s DNS name.
+**Option A — Terraform (recommended):** apply **`infra-live/prod/post/route53-argocd`** after the ALB exists (requires **AWS Load Balancer Controller** so the Ingress has an address). Set `VIH_ROUTE53_ZONE_VIHRESEARCHLABS` and either **`VIH_ARGOCD_ALB_ARN`** (best) or **`VIH_ARGOCD_ALB_DNS`** (+ optional `VIH_ARGOCD_ALB_ZONE_ID` for non-default regions). See repo root **`README.md`** env table.
+
+**Option B — Console:** In **Route 53** (zone `vihresearchlabs.ai`), create an **A record (alias)** for **`argocd.platform.vihresearchlabs.ai`** → the **Argo ALB**, or a **CNAME** to that ALB’s DNS name.
+
+Find ALB ARN (example):
+
+```bash
+aws elbv2 describe-load-balancers --region us-east-1 \
+  --query "LoadBalancers[?DNSName==\`$(kubectl -n argocd get ingress argocd-server -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')\`].LoadBalancerArn" \
+  --output text
+```
 
 ### Disable custom domain (temporary)
 

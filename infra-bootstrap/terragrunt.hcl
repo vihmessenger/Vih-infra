@@ -23,7 +23,7 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents  = <<-EOF
     provider "aws" {
-      region = "${get_env("TG_AWS_REGION", "ap-south-1")}"
+      region = "${get_env("TG_AWS_REGION", "us-east-1")}"
     }
   EOF
 }
