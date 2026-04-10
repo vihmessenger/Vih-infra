@@ -35,7 +35,8 @@ inputs = {
   codestar_connection_arn = dependency.codestar.outputs.connection_arn
   # Source: https://github.com/vihmessenger/vih_cpass_php
   full_repository_id      = get_env("VIH_GITHUB_REPO_CPASS", "vihmessenger/vih_cpass_php")
-  branch_name             = get_env("VIH_GITHUB_BRANCH", "main")
+  # Dockerfile lives on staging; override with VIH_GITHUB_BRANCH for other tracks.
+  branch_name             = get_env("VIH_GITHUB_BRANCH", "staging")
 
   ecr_repository_url  = dependency.ecr.outputs.registry_host
   ecr_repository_name = "vih-cpass-php"

@@ -133,8 +133,9 @@ resource "aws_codebuild_project" "build" {
       name  = "DOCKERFILE_PATH"
       value = var.dockerfile_path
     }
+    # Not named DOCKER_CONTEXT — that env is reserved by Docker CLI (daemon context selection).
     environment_variable {
-      name  = "DOCKER_CONTEXT"
+      name  = "DOCKER_BUILD_CONTEXT"
       value = var.docker_context
     }
   }

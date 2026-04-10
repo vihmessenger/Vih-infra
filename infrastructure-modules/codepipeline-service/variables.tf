@@ -38,7 +38,7 @@ variable "dockerfile_path" {
 
 variable "docker_context" {
   type        = string
-  description = "Docker build context directory relative to repository root."
+  description = "Docker build context path relative to repo root. Exposed to CodeBuild as DOCKER_BUILD_CONTEXT (not DOCKER_CONTEXT — reserved by Docker CLI)."
   default     = "."
 }
 

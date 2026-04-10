@@ -1,5 +1,5 @@
 image:
-  repository: ""
+  repository: 327512370966.dkr.ecr.us-east-1.amazonaws.com/vih-nlp
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -7,3 +7,8 @@ replicaCount: 2
 
 service:
   port: 8000
+
+ingress:
+  enabled: false
+  host: ""
+  certificateArn: ""

@@ -1,5 +1,5 @@
 # Argo CD Application — Django NLP (add separate Apps for Daphne WS + worker if needed).
-# Docker/CI source: https://github.com/vihmessenger/vih_nlp (CodePipeline default branch: main)
+# Docker/CI source: https://github.com/vihmessenger/vih_nlp (CodePipeline default branch: nlp_backend_staging)
 # Helm chart: set repoURL to the Git repo that contains k8s/charts/vih-nlp.
 apiVersion: argoproj.io/v1alpha1
 kind: Application

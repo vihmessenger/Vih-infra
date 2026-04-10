@@ -1,7 +1,6 @@
-# Set repository to your ECR URL after first CI push, e.g.
-# 123456789012.dkr.ecr.us-east-1.amazonaws.com/vih-messenger
+# After CodePipeline pushes to ECR, bump tag in Git or use Image Updater.
 image:
-  repository: ""
+  repository: 327512370966.dkr.ecr.us-east-1.amazonaws.com/vih-messenger
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -13,3 +12,5 @@ service:
 ingress:
   enabled: false
   host: ""
+  # Optional ACM cert ARN on ALB (same region as cluster). When set, HTTPS + redirect are configured.
+  certificateArn: ""

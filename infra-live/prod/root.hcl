@@ -61,4 +61,10 @@ terraform {
     commands  = get_terraform_commands_that_need_locking()
     arguments = ["-lock-timeout=5m"]
   }
+  # After backend block changes (e.g. use_lockfile, KMS), plain init can error with
+  # "Backend configuration changed". -reconfigure keeps using the same S3 key; no state migration.
+  extra_arguments "init_reconfigure" {
+    commands  = ["init"]
+    arguments = ["-reconfigure"]
+  }
 }

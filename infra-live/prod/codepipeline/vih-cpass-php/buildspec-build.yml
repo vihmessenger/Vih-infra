@@ -1,5 +1,5 @@
 # Build Docker image for vih-cpass-php and push to ECR.
-# DOCKERFILE_PATH / DOCKER_CONTEXT from Terragrunt (defaults Dockerfile / .).
+# DOCKERFILE_PATH / DOCKER_BUILD_CONTEXT from Terragrunt (defaults Dockerfile / .).
 version: 0.2
 
 phases:
@@ -12,7 +12,7 @@ phases:
       - echo "IMAGE_URI=$IMAGE_URI"
   build:
     commands:
-      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_CONTEXT"
+      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_BUILD_CONTEXT"
   post_build:
     commands:
       - docker push $IMAGE_URI

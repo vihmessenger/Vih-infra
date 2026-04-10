@@ -33,9 +33,9 @@ inputs = {
   pipeline_name = "vih-messenger"
 
   codestar_connection_arn = dependency.codestar.outputs.connection_arn
-  # Source: https://github.com/vihmessenger/vih-messenger
+  # Source: https://github.com/vihmessenger/vih-messenger — Dockerfile at repo root is on newDesign (not main).
   full_repository_id = get_env("VIH_GITHUB_REPO_MESSENGER", "vihmessenger/vih-messenger")
-  branch_name          = get_env("VIH_GITHUB_BRANCH_MESSENGER", "main")
+  branch_name          = get_env("VIH_GITHUB_BRANCH_MESSENGER", "newDesign")
 
   ecr_repository_url  = dependency.ecr.outputs.registry_host
   ecr_repository_name = "vih-messenger"

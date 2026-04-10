@@ -11,8 +11,8 @@ Infrastructure installs **Argo CD** on EKS via Terraform (`infrastructure-module
 | Service | GitHub |
 |---------|--------|
 | CPaaS PHP | [vihmessenger/vih_cpass_php](https://github.com/vihmessenger/vih_cpass_php) |
-| NLP (Django) | [vihmessenger/vih_nlp](https://github.com/vihmessenger/vih_nlp) — CodePipeline default branch **`main`** (`VIH_GITHUB_BRANCH_NLP`) |
-| Web frontend | [vihmessenger/vih-messenger](https://github.com/vihmessenger/vih-messenger) — default **`main`** (`VIH_GITHUB_BRANCH_MESSENGER`) |
+| NLP (Django) | [vihmessenger/vih_nlp](https://github.com/vihmessenger/vih_nlp) — CodePipeline default **`nlp_backend_staging`** (`VIH_GITHUB_BRANCH_NLP`) |
+| Web frontend | [vihmessenger/vih-messenger](https://github.com/vihmessenger/vih-messenger) — CodePipeline default **`newDesign`** (`VIH_GITHUB_BRANCH_MESSENGER`) |
 
 Set `repoURL` in `applications/*.yaml` to **[vihmessenger/Vih-infra](https://github.com/vihmessenger/Vih-infra)** (default: **`https://github.com/vihmessenger/Vih-infra.git`**).
 
@@ -38,6 +38,27 @@ kubectl apply -f k8s/argocd/applications/
 ```
 
 Or let a root **App of Apps** point at this folder.
+
+### Deploy NLP + web frontend (Messenger)
+
+1. **Prerequisites:** EKS cluster; **AWS Load Balancer Controller** installed (`IngressClass` **`alb`**); images in **ECR** for `vih-nlp` and `vih-messenger` (CodePipeline or manual push). Node IAM allows **ECR pull** (default worker role usually does).
+2. **Helm values:** In `k8s/charts/vih-nlp/values.yaml` and `k8s/charts/vih-messenger/values.yaml`, set `image.repository` / `image.tag` to your account’s ECR URI and the tag you want (e.g. `latest` after first successful build).
+3. **Public HTTP(S):** Set `ingress.enabled: true`, `ingress.host` (e.g. `app.platform.vihresearchlabs.ai` / NLP hostname), and optionally `ingress.certificateArn` (ACM in the **same region** as the ALB). Ensure **ACM** includes that hostname (see `infra-live/prod/pre/acm`).
+4. **Register Git in Argo CD** (HTTPS token or SSH) if the repo is private.
+5. **Apply only NLP + Messenger apps** (optional):
+
+   ```bash
+   kubectl apply -f k8s/argocd/applications/vih-nlp.yaml
+   kubectl apply -f k8s/argocd/applications/vih-messenger.yaml
+   ```
+
+6. **Verify:** Argo CD UI → Applications **Synced / Healthy**; then:
+
+   ```bash
+   kubectl -n vih-messenger get pods,svc,ingress
+   ```
+
+   `ImagePullBackOff` → wrong tag or ECR empty; `Pending` → node capacity; Ingress **no address** → Load Balancer Controller or `ingressClassName: alb` missing.
 
 ## First-time admin password
 

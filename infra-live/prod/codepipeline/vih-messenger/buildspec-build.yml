@@ -1,7 +1,7 @@
 # Build Docker image for vih-messenger (web frontend) and push to ECR.
-# Repo: https://github.com/vihmessenger/vih-messenger — default branch: main (override via terragrunt env)
+# Repo: https://github.com/vihmessenger/vih-messenger — CodePipeline branch from Terragrunt (default newDesign; Dockerfile at root lives there).
 #
-# DOCKERFILE_PATH / DOCKER_CONTEXT are set on the CodeBuild project (Terragrunt inputs).
+# DOCKERFILE_PATH / DOCKER_BUILD_CONTEXT are set on the CodeBuild project (Terragrunt inputs).
 version: 0.2
 
 phases:
@@ -15,7 +15,7 @@ phases:
       - echo "IMAGE_URI=$IMAGE_URI"
   build:
     commands:
-      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_CONTEXT"
+      - docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_URI" "$DOCKER_BUILD_CONTEXT"
   post_build:
     commands:
       - docker push $IMAGE_URI

@@ -16,9 +16,9 @@ Terraform state keys use the prefix **`prod/`** in the S3 backend (see `root.hcl
 
 | Pipeline | Default branch | Override env |
 |----------|----------------|--------------|
-| vih-cpass-php | `main` | `VIH_GITHUB_BRANCH` |
+| vih-cpass-php | `staging` (Dockerfile) | `VIH_GITHUB_BRANCH` |
 | vih-nlp | `nlp_backend_staging` | `VIH_GITHUB_BRANCH_NLP` |
-| vih-messenger | `main` | `VIH_GITHUB_BRANCH_MESSENGER` |
+| vih-messenger | `newDesign` (Dockerfile at root) | `VIH_GITHUB_BRANCH_MESSENGER` |
 
 ## ACM (TLS)
 
