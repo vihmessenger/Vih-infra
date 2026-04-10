@@ -10,7 +10,9 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  host: ""
-  # Optional ACM cert ARN on ALB (same region as cluster). When set, HTTPS + redirect are configured.
-  certificateArn: ""
+  enabled: true
+  host: app.platform.vihresearchlabs.ai
+  # Same ACM cert as api/ws/argocd (pre/acm).
+  certificateArn: arn:aws:acm:us-east-1:327512370966:certificate/0ed8b852-98aa-4d63-8047-5b7d16caa91e
+  healthcheckPath: /
+  successCodes: "200,301,302"

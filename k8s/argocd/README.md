@@ -60,6 +60,31 @@ Or let a root **App of Apps** point at this folder.
 
    `ImagePullBackOff` → wrong tag or ECR empty; `Pending` → node capacity; Ingress **no address** → Load Balancer Controller or `ingressClassName: alb` missing.
 
+### Public URLs (`app.platform` + `api.platform`)
+
+Chart defaults (after Git push + Argo sync):
+
+| App | Hostname | Helm chart |
+|-----|----------|------------|
+| Web frontend | `app.platform.vihresearchlabs.ai` | `vih-messenger` |
+| NLP API | `api.platform.vihresearchlabs.ai` | `vih-nlp` |
+
+1. Set **`ingress.certificateArn`** in both `values.yaml` files to the **same** ACM certificate ARN from `pre/acm` (covers both names in SANs):
+
+   ```bash
+   cd infra-live/prod/pre/acm && terragrunt output -raw certificate_arn
+   ```
+
+   Commit and let Argo sync — listeners **80 + 443** with redirect to HTTPS.
+
+2. Wait until each Ingress shows an **ADDRESS** (ALB DNS name).
+
+3. **Route 53:** apply **`infra-live/prod/post/route53-platform-app`** and **`post/route53-platform-api`** (see each folder’s `README.md`) with the matching ALB ARNs, or create **A (alias)** records manually to those ALBs.
+
+4. Test: `https://app.platform.vihresearchlabs.ai` and `https://api.platform.vihresearchlabs.ai`.
+
+Without **`certificateArn`**, the ALB still provisions with **HTTP :80** only (no TLS) until you add the ARN and re-sync.
+
 ## First-time admin password
 
 ```bash

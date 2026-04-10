@@ -9,6 +9,8 @@ service:
   port: 8000
 
 ingress:
-  enabled: false
-  host: ""
-  certificateArn: ""
+  enabled: true
+  host: api.platform.vihresearchlabs.ai
+  certificateArn: arn:aws:acm:us-east-1:327512370966:certificate/0ed8b852-98aa-4d63-8047-5b7d16caa91e
+  healthcheckPath: /
+  successCodes: "200-399"

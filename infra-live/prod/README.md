@@ -36,4 +36,4 @@ terragrunt init && terragrunt apply
 
 Follow the numbered order in the repo root **`README.md`**.
 
-Optional: **`post/route53-argocd`** — Route 53 **A alias** for `argocd.platform.vihresearchlabs.ai` → Argo ALB. **`application/eks-lbc`** — Helm-managed **AWS Load Balancer Controller**. If either was created manually, use **`terragrunt import`** per those folders’ `README.md` to sync state.
+Optional: **`post/route53-argocd`** — Route 53 **A alias** for `argocd.platform.vihresearchlabs.ai` → Argo ALB. **`post/route53-platform-app`** / **`post/route53-platform-api`** — **A alias** for **`app.platform`** (Messenger) and **`api.platform`** (NLP) → each app’s Ingress ALB (see those `README.md`). **`application/eks-lbc`** — Helm-managed **AWS Load Balancer Controller**. If either was created manually, use **`terragrunt import`** per those folders’ `README.md` to sync state.
